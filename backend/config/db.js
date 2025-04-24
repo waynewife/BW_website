@@ -1,0 +1,1 @@
+mongoose.connect('mongodb+srv://nayan:chand@bookworm.ydcq6.mongodb.net/?retryWrites=true&w=majority&appName=BookWorm', { useNewUrlParser: true, useUnifiedTopology: true })
