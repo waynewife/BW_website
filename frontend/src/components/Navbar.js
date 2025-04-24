@@ -10,16 +10,22 @@ const Navbar = () => {
   const [username, setUsername] = useState('Guest');
 
   useEffect(() => {
-    // Simulate fetching username
     const storedUser = localStorage.getItem('username');
     if (storedUser) setUsername(storedUser);
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setUsername('Guest');
+    window.location.href = '/login';
+  };
+
   return (
-    <nav className={`navbar ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
+    <nav className={`navbar ${theme}-mode`}>
       <div className="logo">
         <Link to="/">
-          <img src="/logo.png" alt="ReadVibe Logo" className="h-12" />
+          <img src="/logo.png" alt="BookWorm Logo" className="h-12" />
         </Link>
       </div>
       <div className="nav-items">
@@ -40,9 +46,10 @@ const Navbar = () => {
         <Link to="/library" className="nav-btn">Library</Link>
         <input type="text" placeholder="Search books..." className="search-tab" />
         <button onClick={toggleTheme} className="toggle-btn">
-          {theme === 'dark' ? 'Light' : 'Dark'} Mode
+          {theme === 'light' ? 'Dark' : 'Light'} Mode
         </button>
         <Link to="/profile" className="nav-btn">{username}</Link>
+        <button onClick={handleLogout} className="nav-btn">Logout</button>
       </div>
     </nav>
   );
