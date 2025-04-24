@@ -1,1 +1,16 @@
-mongoose.connect('mongodb+srv://nayan:chand@bookworm.ydcq6.mongodb.net/?retryWrites=true&w=majority&appName=BookWorm', { useNewUrlParser: true, useUnifiedTopology: true })
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/readvibe', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error connecting to MongoDB: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+module.exports = connectDB;

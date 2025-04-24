@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
+require('dotenv').config();
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect('mongodb://localhost/readvibe', { useNewUrlParser: true, useUnifiedTopology: true })

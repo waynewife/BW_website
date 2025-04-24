@@ -6,6 +6,8 @@ import GenrePage from './components/GenrePage';
 import Library from './components/Library';
 import SearchResults from './components/SearchResults';
 import Profile from './components/Profile';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import { ThemeProvider } from './theme';
 import './styles/App.css';
 
@@ -20,6 +22,8 @@ const App = () => {
           <Route path="/library" component={Library} />
           <Route path="/search" component={SearchResults} />
           <Route path="/profile" component={Profile} />
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
         </Switch>
       </Router>
     </ThemeProvider>
