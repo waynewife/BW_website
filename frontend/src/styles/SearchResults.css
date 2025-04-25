@@ -114,3 +114,35 @@
 .read-now-btn:hover, .add-to-library-btn:hover {
   transform: scale(1.05);
 }
+
+.list-selection {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.list-selection select {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+
+.list-selection button {
+  padding: 0.5rem 1rem;
+  background: #FFD700;
+  color: #4B5EAA;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.list-selection button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.list-selection button:not(:disabled):hover {
+  transform: scale(1.05);
+}

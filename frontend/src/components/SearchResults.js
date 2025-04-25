@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/SearchResults.css';
 
 const SearchResults = () => {
@@ -7,6 +8,23 @@ const SearchResults = () => {
   const history = useHistory();
   const { books = [], error = '' } = location.state || {};
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [lists, setLists] = useState([]);
+  const [selectedList, setSelectedList] = useState('');
+
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/profile', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setLists(response.data.lists || []);
+      } catch (error) {
+        console.error('Error fetching lists:', error);
+      }
+    };
+    fetchLists();
+  }, []);
 
   const handleBookClick = (book) => {
     setSelectedBook(book);
@@ -17,7 +35,41 @@ const SearchResults = () => {
   };
 
   const handleAddToLibrary = () => {
-    history.push('/add-to-library', { book: selectedBook });
+    setShowAddModal(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setShowAddModal(false);
+    setSelectedList('');
+  };
+
+  const handleAddBook = async () => {
+    if (!selectedList) return;
+    if (selectedList === 'create-new') {
+      setShowAddModal(false);
+      history.push('/create-list', { book: selectedBook });
+      return;
+    }
+    try {
+      await axios.post('http://localhost:5000/api/users/add-book-to-list', {
+        listName: selectedList,
+        book: {
+          bookId: selectedBook.id,
+          title: selectedBook.title,
+          author: selectedBook.author,
+          description: selectedBook.description,
+          cover: selectedBook.cover,
+          genre: selectedBook.genre,
+        }
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setShowAddModal(false);
+      setSelectedBook(null);
+      setSelectedList('');
+    } catch (error) {
+      console.error('Error adding book to list:', error);
+    }
   };
 
   return (
@@ -41,7 +93,7 @@ const SearchResults = () => {
       {selectedBook && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close-btn" onClick={handleCloseModal}>&times;</span>
+            <span className="close-btn" onClick={handleCloseModal}>×</span>
             <h2>{selectedBook.title}</h2>
             <p><strong>Author:</strong> {selectedBook.author}</p>
             <p><strong>Genre:</strong> {selectedBook.genre}</p>
@@ -49,6 +101,28 @@ const SearchResults = () => {
             <div className="modal-actions">
               <button className="read-now-btn">Read Now</button>
               <button className="add-to-library-btn" onClick={handleAddToLibrary}>Add to Library</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAddModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close-btn" onClick={handleCloseAddModal}>×</span>
+            <h2>Add "{selectedBook.title}" to Library</h2>
+            <div className="list-selection">
+              <select
+                value={selectedList}
+                onChange={(e) => setSelectedList(e.target.value)}
+              >
+                <option value="">Select a list</option>
+                {lists.length > 0 && lists.map(list => (
+                  <option key={list.name} value={list.name}>{list.name}</option>
+                ))}
+                <option value="create-new">Create New List</option>
+              </select>
+              <button onClick={handleAddBook} disabled={!selectedList}>Add</button>
             </div>
           </div>
         </div>
