@@ -1,0 +1,44 @@
+.add-to-library {
+    padding: 2rem;
+    background: linear-gradient(135deg, #4B5EAA, #A94BB5, #E94B4B);
+    min-height: 100vh;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .add-to-library h2 {
+    margin-bottom: 1rem;
+  }
+  
+  .list-selection {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .list-selection select {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .list-selection button {
+    padding: 0.5rem 1rem;
+    background: #FFD700;
+    color: #4B5EAA;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .list-selection button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .list-selection button:not(:disabled):hover {
+    transform: scale(1.05);
+  }

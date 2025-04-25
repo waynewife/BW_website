@@ -8,6 +8,8 @@ import SearchResults from './components/SearchResults';
 import Profile from './components/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AddToLibrary from './components/AddToLibrary';
+import CreateList from './components/CreateList';
 import { ThemeProvider } from './theme';
 import './styles/App.css';
 
@@ -24,6 +26,8 @@ const App = () => {
           <Route path="/profile" component={Profile} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
+          <Route path="/add-to-library" component={AddToLibrary} />
+          <Route path="/create-list" component={CreateList} />
         </Switch>
       </Router>
     </ThemeProvider>
