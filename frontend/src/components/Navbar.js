@@ -31,14 +31,38 @@ const Navbar = () => {
         `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchTerm)}&maxResults=10`
       );
       const fetchedBooks = response.data.items.map(item => ({
+        id: item.id,
         title: item.volumeInfo.title,
         author: item.volumeInfo.authors?.join(', ') || 'Unknown',
         description: item.volumeInfo.description || 'No description available',
+        cover: item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192.png?text=No+Cover',
+        genre: item.volumeInfo.categories?.[0] || 'Unknown',
       }));
       history.push('/search', { books: fetchedBooks });
     } catch (error) {
       console.error('Error fetching books:', error);
       history.push('/search', { books: [], error: 'Failed to fetch books.' });
+    }
+  };
+
+  const handleGenreClick = async (genre) => {
+    setIsOpen(false);
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(genre)}&maxResults=10`
+      );
+      const fetchedBooks = response.data.items.map(item => ({
+        id: item.id,
+        title: item.volumeInfo.title,
+        author: item.volumeInfo.authors?.join(', ') || 'Unknown',
+        description: item.volumeInfo.description || 'No description available',
+        cover: item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192.png?text=No+Cover',
+        genre: item.volumeInfo.categories?.[0] || genre,
+      }));
+      history.push(`/genre/${genre}`, { books: fetchedBooks });
+    } catch (error) {
+      console.error('Error fetching genre books:', error);
+      history.push(`/genre/${genre}`, { books: [], error: 'Failed to fetch books for this genre.' });
     }
   };
 
@@ -57,9 +81,13 @@ const Navbar = () => {
           {isOpen && (
             <div className="dropdown">
               {genres.map(genre => (
-                <Link key={genre} to={`/genre/${genre}`} onClick={() => setIsOpen(false)}>
+                <button
+                  key={genre}
+                  onClick={() => handleGenreClick(genre)}
+                  className="dropdown-item"
+                >
                   {genre}
-                </Link>
+                </button>
               ))}
             </div>
           )}

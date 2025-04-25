@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import BookList from '../components/BookList';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import '../styles/GenrePage.css';
 
 const GenrePage = () => {
-  const { genre } = useParams();
-  const [books, setBooks] = useState([]);
-
-  useEffect(() => {
-    axios.get(`http://localhost:5000/api/books/genre/${genre}`)
-      .then(response => setBooks(response.data))
-      .catch(error => console.error('Error fetching books:', error));
-  }, [genre]);
+  const location = useLocation();
+  const { books = [], error = '' } = location.state || {};
 
   return (
     <div className="genre-page">
-      <h1>{genre} Books</h1>
-      <BookList books={books} />
+      <h2>Books in Genre</h2>
+      {error && <p className="error">{error}</p>}
+      <div className="book-grid">
+        {books.length > 0 ? (
+          books.map((book) => (
+            <div key={book.id} className="book-card">
+              <img src={book.cover} alt={book.title} className="book-cover" />
+              <h3>{book.title}</h3>
+              <p>Author: {book.author}</p>
+            </div>
+          ))
+        ) : (
+          !error && <p>No books found for this genre.</p>
+        )}
+      </div>
     </div>
   );
 };

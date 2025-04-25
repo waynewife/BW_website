@@ -58,14 +58,17 @@
   animation: fadeIn 0.3s ease;
 }
 
-.dropdown a {
+.dropdown-item {
   padding: 0.5rem 1rem;
   color: white;
-  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.dropdown a:hover {
+.dropdown-item:hover {
   background: #A94BB5;
 }
 

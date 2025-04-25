@@ -12,3 +12,46 @@
 .library-page p {
   font-size: 1.2rem;
 }
+
+.list-section {
+  margin-bottom: 2rem;
+}
+
+.list-section h2 {
+  margin-bottom: 1rem;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.book-card {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+.book-cover {
+  width: 128px;
+  height: 192px;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.book-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.book-card p {
+  margin: 0;
+  font-size: 0.9rem;
+}

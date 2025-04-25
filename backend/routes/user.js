@@ -1,15 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getLibrary, getProfile, updateProfile, uploadBook } = require('../controllers/userController');
 const auth = require('../middleware/auth');
-const multer = require('multer');
+const { getProfile, updateProfile, createList, addBookToList } = require('../controllers/userController');
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
-router.get('/library', auth, getLibrary);
 router.get('/profile', auth, getProfile);
 router.put('/profile', auth, updateProfile);
-router.post('/upload-book', auth, upload.single('file'), uploadBook);
+router.post('/create-list', auth, createList);
+router.post('/add-book-to-list', auth, addBookToList);
 
 module.exports = router;
