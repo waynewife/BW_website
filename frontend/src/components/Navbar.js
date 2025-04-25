@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Navbar.css';
 import { useTheme } from '../theme';
 
@@ -8,6 +9,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [username, setUsername] = useState('Guest');
+  const [searchTerm, setSearchTerm] = useState('');
+  const history = useHistory();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('username');
@@ -19,6 +22,24 @@ const Navbar = () => {
     localStorage.removeItem('username');
     setUsername('Guest');
     window.location.href = '/login';
+  };
+
+  const handleSearch = async () => {
+    if (!searchTerm) return;
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchTerm)}&maxResults=10`
+      );
+      const fetchedBooks = response.data.items.map(item => ({
+        title: item.volumeInfo.title,
+        author: item.volumeInfo.authors?.join(', ') || 'Unknown',
+        description: item.volumeInfo.description || 'No description available',
+      }));
+      history.push('/search', { books: fetchedBooks });
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      history.push('/search', { books: [], error: 'Failed to fetch books.' });
+    }
   };
 
   return (
@@ -44,7 +65,16 @@ const Navbar = () => {
           )}
         </div>
         <Link to="/library" className="nav-btn">Library</Link>
-        <input type="text" placeholder="Search books..." className="search-tab" />
+        <div className="search-bar">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search books..."
+            className="search-tab"
+          />
+          <button onClick={handleSearch} className="search-btn">Search</button>
+        </div>
         <button onClick={toggleTheme} className="toggle-btn">
           {theme === 'light' ? 'Dark' : 'Light'} Mode
         </button>

@@ -1,25 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import BookList from '../components/BookList';
 import '../styles/SearchResults.css';
 
 const SearchResults = () => {
-  const [results, setResults] = useState([]);
-  const query = new URLSearchParams(useLocation().search).get('q');
-
-  useEffect(() => {
-    if (query) {
-      axios.get(`http://localhost:5000/api/books/search?q=${query}`)
-        .then(response => setResults(response.data))
-        .catch(error => console.error('Error searching books:', error));
-    }
-  }, [query]);
+  const location = useLocation();
+  const { books = [], error = '' } = location.state || {};
 
   return (
-    <div className="search-results-page">
-      <h1>Search Results for "{query}"</h1>
-      <BookList books={results} />
+    <div className="search-results">
+      <h2>Search Results</h2>
+      {error && <p className="error">{error}</p>}
+      <ul className="book-list">
+        {books.length > 0 ? (
+          books.map((book, index) => (
+            <li key={index} className="book-item">
+              <h3>{book.title}</h3>
+              <p>Author: {book.author}</p>
+              <p>{book.description}</p>
+            </li>
+          ))
+        ) : (
+          !error && <p>No books found.</p>
+        )}
+      </ul>
     </div>
   );
 };

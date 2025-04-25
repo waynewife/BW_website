@@ -69,12 +69,31 @@
   background: #A94BB5;
 }
 
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .search-tab {
   padding: 0.5rem;
   border: none;
   border-radius: 5px;
   background: #fff;
   color: #000;
+}
+
+.search-btn {
+  padding: 0.5rem 1rem;
+  background: #FFD700;
+  color: #4B5EAA;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.search-btn:hover {
+  transform: scale(1.05);
 }
 
 .toggle-btn {

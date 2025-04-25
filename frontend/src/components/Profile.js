@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTheme } from '../theme';
 import '../styles/Profile.css';
 
 const Profile = () => {
+  const { theme } = useTheme();
   const [user, setUser] = useState({ username: 'Guest', readingList: [] });
   const [about, setAbout] = useState('Tap here to add a description about yourself...');
   const [isEditingAbout, setIsEditingAbout] = useState(false);
@@ -14,11 +16,9 @@ const Profile = () => {
         const response = await axios.get('http://localhost:5000/api/users/profile', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        console.log('Profile data:', response.data);
         setUser(response.data);
         setAbout(response.data.about || 'Tap here to add a description about yourself...');
       } catch (error) {
-        console.error('Error fetching profile:', error.response?.data || error.message);
         setError(error.response?.data?.message || 'Failed to load profile');
       }
     };
@@ -36,14 +36,13 @@ const Profile = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
     } catch (error) {
-      console.error('Error saving about:', error);
       setError('Failed to save about section');
     }
   };
 
   if (error) {
     return (
-      <div className="profile-page">
+      <div className={`profile-page ${theme}-mode`}>
         <h1>Error</h1>
         <p>{error}</p>
         <button onClick={() => window.location.href = '/login'}>Go to Login</button>
@@ -52,7 +51,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="profile-page">
+    <div className={`profile-page ${theme}-mode`}>
       <div className="profile-header">
         <div className="profile-pic">
           <div className="pic-placeholder">Profile Pic</div>
@@ -94,11 +93,10 @@ const Profile = () => {
       <div className="profile-section">
         <h2>{user.username}'s Reading List</h2>
         {user.readingList.length > 0 ? (
-          user.readingList.map(book => (
-            <div key={book._id} className="book-item">
+          user.readingList.map((book, index) => (
+            <div key={index} className="book-item">
               <span>{book.title}</span>
-              <span>{book.views || '0'} Views</span>
-              <span>{book.rating || '0'} Stars</span>
+              {book.pdfPath && <a href={`http://localhost:5000/${book.pdfPath}`} target="_blank" rel="noopener noreferrer">View PDF</a>}
             </div>
           ))
         ) : (
