@@ -34,25 +34,10 @@ const GenrePage = () => {
     setSelectedBook(null);
   };
 
-  const handleAddToLibrary = () => {
-    setShowAddModal(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setShowAddModal(false);
-    setSelectedList('');
-  };
-
-  const handleAddBook = async () => {
-    if (!selectedList) return;
-    if (selectedList === 'create-new') {
-      setShowAddModal(false);
-      history.push('/create-list', { book: selectedBook });
-      return;
-    }
+  const handleAddToLibrary = async () => {
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: selectedList,
+        listName: 'Default',
         book: {
           bookId: selectedBook.id,
           title: selectedBook.title,
@@ -60,24 +45,47 @@ const GenrePage = () => {
           description: selectedBook.description,
           cover: selectedBook.cover,
           genre: selectedBook.genre,
+          volumeInfo: selectedBook.volumeInfo,
         }
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setShowAddModal(false);
+      alert('Book added to your library!');
       setSelectedBook(null);
-      setSelectedList('');
     } catch (error) {
-      console.error('Error adding book to list:', error);
+      console.error('Error adding book to library:', error);
+      alert('Failed to add book to library.');
+    }
+  };
+
+  const handleAddToProfileList = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/users/add-book-to-profile-list', {
+        book: {
+          bookId: selectedBook.id,
+          title: selectedBook.title,
+          author: selectedBook.author,
+          description: selectedBook.description,
+          cover: selectedBook.cover,
+          genre: selectedBook.genre,
+          volumeInfo: selectedBook.volumeInfo,
+        }
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      alert('Book added to your profile reading list!');
+      setSelectedBook(null);
+    } catch (error) {
+      console.error('Error adding book to profile list:', error);
+      alert('Failed to add book to profile list.');
     }
   };
 
   const handleReadNow = (book) => {
-    // Check if the book has a preview link
-    if (book.volumeInfo?.previewLink) {
-      window.open(book.volumeInfo.previewLink, '_blank'); // Open preview in new tab
+    if (book.volumeInfo?.infoLink) {
+      window.open(book.volumeInfo.infoLink, '_blank');
     } else {
-      alert('No preview available for this book. Here’s the description:\n\n' + book.description);
+      alert('No link available for this book.');
     }
   };
 
@@ -110,28 +118,7 @@ const GenrePage = () => {
             <div className="modal-actions">
               <button className="read-now-btn" onClick={() => handleReadNow(selectedBook)}>Read Now</button>
               <button className="add-to-library-btn" onClick={handleAddToLibrary}>Add to Library</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showAddModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close-btn" onClick={handleCloseAddModal}>×</span>
-            <h2>Add "{selectedBook.title}" to Library</h2>
-            <div className="list-selection">
-              <select
-                value={selectedList}
-                onChange={(e) => setSelectedList(e.target.value)}
-              >
-                <option value="">Select a list</option>
-                {lists.length > 0 && lists.map(list => (
-                  <option key={list.name} value={list.name}>{list.name}</option>
-                ))}
-                <option value="create-new">Create New List</option>
-              </select>
-              <button onClick={handleAddBook} disabled={!selectedList}>Add</button>
+              <button className="add-to-list-btn" onClick={handleAddToProfileList}>Add to List</button>
             </div>
           </div>
         </div>

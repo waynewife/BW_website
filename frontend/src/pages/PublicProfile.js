@@ -1,31 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Profile.css';
 
-const Profile = () => {
-  const [lists, setLists] = useState([]);
+const PublicProfile = () => {
+  const { username } = useParams();
+  const [profile, setProfile] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [username, setUsername] = useState('Guest');
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchPublicProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users/profile', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        setLists(response.data.lists || []);
-        setUsername(response.data.username || 'Guest');
+        const response = await axios.get(`http://localhost:5000/api/users/public-profile/${username}`);
+        setProfile(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error('Error fetching public profile:', err);
         setError('Failed to load profile data.');
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, []);
+    fetchPublicProfile();
+  }, [username]);
 
   const handleBookClick = (book) => {
     setSelectedBook(book);
@@ -46,9 +44,9 @@ const Profile = () => {
   const handleAddToLibrary = async (book) => {
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: 'Default', // Add to a default list in the library
+        listName: 'Default',
         book: {
-          bookId: book.id,
+          bookId: book.bookId,
           title: book.title,
           author: book.author,
           description: book.description,
@@ -71,7 +69,7 @@ const Profile = () => {
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-profile-list', {
         book: {
-          bookId: book.id,
+          bookId: book.bookId,
           title: book.title,
           author: book.author,
           description: book.description,
@@ -84,11 +82,6 @@ const Profile = () => {
       });
       alert('Book added to your profile reading list!');
       setSelectedBook(null);
-      // Refresh the lists to show the updated reading list
-      const response = await axios.get('http://localhost:5000/api/users/profile', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setLists(response.data.lists || []);
     } catch (error) {
       console.error('Error adding book to profile list:', error);
       alert('Failed to add book to profile list.');
@@ -103,15 +96,12 @@ const Profile = () => {
     return <div className="profile-page">{error}</div>;
   }
 
-  // For the reading list, we'll use a separate list in the backend
-  const readingList = lists.find(list => list.name === 'Profile Reading List') || { books: [] };
-
   return (
     <div className="profile-page">
       <div className="profile-header">
         <div className="profile-pic">Profile Pic</div>
-        <h1>{username}</h1>
-        <p>Reading Lists: {lists.length}  Followers: 0</p>
+        <h1>{profile.username}</h1>
+        <p>Reading Lists: {profile.profileReadingList.length}  Followers: 0</p>
       </div>
       <div className="profile-section">
         <h2>About</h2>
@@ -127,12 +117,12 @@ const Profile = () => {
         </div>
       </div>
       <div className="profile-section">
-        <h2>{username}'s Reading List</h2>
-        {readingList.books.length === 0 ? (
-          <p>No books in your reading list yet.</p>
+        <h2>{profile.username}'s Reading List</h2>
+        {profile.profileReadingList.length === 0 ? (
+          <p>No books in this reading list yet.</p>
         ) : (
           <div className="book-grid">
-            {readingList.books.map(book => (
+            {profile.profileReadingList.map(book => (
               <div key={book.bookId} className="book-card" onClick={() => handleBookClick(book)}>
                 <img src={book.cover} alt={book.title} className="book-cover" />
                 <h4>{book.title}</h4>
@@ -163,4 +153,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default PublicProfile;

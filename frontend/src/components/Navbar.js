@@ -37,6 +37,7 @@ const Navbar = () => {
         description: item.volumeInfo.description || 'No description available',
         cover: item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192.png?text=No+Cover',
         genre: item.volumeInfo.categories?.[0] || 'Unknown',
+        volumeInfo: item.volumeInfo,
       }));
       history.push('/search', { books: fetchedBooks });
     } catch (error) {
@@ -58,6 +59,7 @@ const Navbar = () => {
         description: item.volumeInfo.description || 'No description available',
         cover: item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x192.png?text=No+Cover',
         genre: item.volumeInfo.categories?.[0] || genre,
+        volumeInfo: item.volumeInfo,
       }));
       history.push(`/genre/${genre}`, { books: fetchedBooks });
     } catch (error) {
@@ -106,7 +108,7 @@ const Navbar = () => {
         <button onClick={toggleTheme} className="toggle-btn">
           {theme === 'light' ? 'Dark' : 'Light'} Mode
         </button>
-        <Link to="/profile" className="nav-btn">{username}</Link>
+        <Link to={`/profile/${username}`} className="nav-btn">{username}</Link>
         <button onClick={handleLogout} className="nav-btn">Logout</button>
       </div>
     </nav>

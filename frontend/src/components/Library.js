@@ -31,27 +31,15 @@ const Library = () => {
     setSelectedBook(null);
   };
 
-  const handleAddToLibrary = () => {
-    setShowAddModal(true);
+  const handleAddToLibrary = async () => {
+    // Book is already in library, so this might be redundant
+    alert('This book is already in your library.');
+    setSelectedBook(null);
   };
 
-  const handleCloseAddModal = () => {
-    setShowAddModal(false);
-    setSelectedList('');
-  };
-
-  const handleAddBook = async () => {
-    if (!selectedList) return;
-    if (selectedList === 'create-new') {
-      setShowAddModal(false);
-      // Note: This might need adjustment since the book is already in a list
-      // For now, we'll just close the modal
-      setSelectedBook(null);
-      return;
-    }
+  const handleAddToProfileList = async () => {
     try {
-      await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: selectedList,
+      await axios.post('http://localhost:5000/api/users/add-book-to-profile-list', {
         book: {
           bookId: selectedBook.bookId,
           title: selectedBook.title,
@@ -59,23 +47,24 @@ const Library = () => {
           description: selectedBook.description,
           cover: selectedBook.cover,
           genre: selectedBook.genre,
+          volumeInfo: selectedBook.volumeInfo,
         }
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      setShowAddModal(false);
+      alert('Book added to your profile reading list!');
       setSelectedBook(null);
-      setSelectedList('');
     } catch (error) {
-      console.error('Error adding book to list:', error);
+      console.error('Error adding book to profile list:', error);
+      alert('Failed to add book to profile list.');
     }
   };
 
   const handleReadNow = (book) => {
-    if (book.volumeInfo?.previewLink) {
-      window.open(book.volumeInfo.previewLink, '_blank');
+    if (book.volumeInfo?.infoLink) {
+      window.open(book.volumeInfo.infoLink, '_blank');
     } else {
-      alert('No preview available for this book. Here’s the description:\n\n' + book.description);
+      alert('No link available for this book.');
     }
   };
 
@@ -115,27 +104,7 @@ const Library = () => {
             <div className="modal-actions">
               <button className="read-now-btn" onClick={() => handleReadNow(selectedBook)}>Read Now</button>
               <button className="add-to-library-btn" onClick={handleAddToLibrary}>Add to Library</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showAddModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close-btn" onClick={handleCloseAddModal}>×</span>
-            <h2>Add "{selectedBook.title}" to Library</h2>
-            <div className="list-selection">
-              <select
-                value={selectedList}
-                onChange={(e) => setSelectedList(e.target.value)}
-              >
-                <option value="">Select a list</option>
-                {listsForModal.length > 0 && listsForModal.map(list => (
-                  <option key={list.name} value={list.name}>{list.name}</option>
-                ))}
-                <option value="create-new">Create New List</option>
-              </select>
-              <button onClick={handleAddBook} disabled={!selectedList}>Add</button>
+              <button className="add-to-list-btn" onClick={handleAddToProfileList}>Add to List</button>
             </div>
           </div>
         </div>
