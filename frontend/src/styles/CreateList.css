@@ -1,44 +1,47 @@
 .create-list {
-    padding: 2rem;
-    background: linear-gradient(135deg, #4B5EAA, #A94BB5, #E94B4B);
-    min-height: 100vh;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .create-list h2 {
-    margin-bottom: 1rem;
-  }
-  
-  .error {
-    color: #ff4444;
-    margin-bottom: 1rem;
-  }
-  
-  .form-group {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .form-group input {
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: none;
-  }
-  
-  .form-group button {
-    padding: 0.5rem 1rem;
-    background: #FFD700;
-    color: #4B5EAA;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  
-  .form-group button:hover {
-    transform: scale(1.05);
-  }
+  padding: 2rem;
+  background: linear-gradient(135deg, #4B5EAA, #A94BB5, #E94B4B);
+  min-height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.create-list h2 {
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #ff4444;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  background: #fff; /* White background for contrast */
+  color: #333; /* Dark text color for visibility */
+  width: 200px;
+}
+
+.form-group button {
+  padding: 0.5rem 1rem;
+  background: #FFD700;
+  color: #4B5EAA;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.form-group button:hover {
+  transform: scale(1.05);
+}

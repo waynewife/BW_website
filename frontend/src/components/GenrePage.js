@@ -72,6 +72,15 @@ const GenrePage = () => {
     }
   };
 
+  const handleReadNow = (book) => {
+    // Check if the book has a preview link
+    if (book.volumeInfo?.previewLink) {
+      window.open(book.volumeInfo.previewLink, '_blank'); // Open preview in new tab
+    } else {
+      alert('No preview available for this book. Here’s the description:\n\n' + book.description);
+    }
+  };
+
   return (
     <div className="genre-page">
       <h2>Books in Genre</h2>
@@ -99,7 +108,7 @@ const GenrePage = () => {
             <p><strong>Genre:</strong> {selectedBook.genre}</p>
             <p>{selectedBook.description}</p>
             <div className="modal-actions">
-              <button className="read-now-btn">Read Now</button>
+              <button className="read-now-btn" onClick={() => handleReadNow(selectedBook)}>Read Now</button>
               <button className="add-to-library-btn" onClick={handleAddToLibrary}>Add to Library</button>
             </div>
           </div>

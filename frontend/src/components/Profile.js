@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useTheme } from '../theme';
 import '../styles/Profile.css';
 
 const Profile = () => {
-  const { theme } = useTheme();
-  const [user, setUser] = useState({ username: 'Guest', readingList: [] });
-  const [about, setAbout] = useState('Tap here to add a description about yourself...');
-  const [isEditingAbout, setIsEditingAbout] = useState(false);
-  const [error, setError] = useState('');
+  const [lists, setLists] = useState([]); // Initialize as empty array
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
+  const [username, setUsername] = useState('Guest');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -16,93 +14,52 @@ const Profile = () => {
         const response = await axios.get('http://localhost:5000/api/users/profile', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        setUser(response.data);
-        setAbout(response.data.about || 'Tap here to add a description about yourself...');
-      } catch (error) {
-        setError(error.response?.data?.message || 'Failed to load profile');
+        setLists(response.data.lists || []); // Ensure lists is always an array
+        setUsername(response.data.username || 'Guest');
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        setError('Failed to load profile data.');
+        setLoading(false);
       }
     };
     fetchProfile();
   }, []);
 
-  const handleAboutEdit = () => {
-    setIsEditingAbout(true);
-  };
-
-  const handleAboutSave = async () => {
-    setIsEditingAbout(false);
-    try {
-      await axios.put('http://localhost:5000/api/users/profile', { about }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-    } catch (error) {
-      setError('Failed to save about section');
-    }
-  };
+  if (loading) {
+    return <div className="profile-page">Loading...</div>;
+  }
 
   if (error) {
-    return (
-      <div className={`profile-page ${theme}-mode`}>
-        <h1>Error</h1>
-        <p>{error}</p>
-        <button onClick={() => window.location.href = '/login'}>Go to Login</button>
-      </div>
-    );
+    return <div className="profile-page">{error}</div>;
   }
 
   return (
-    <div className={`profile-page ${theme}-mode`}>
-      <div className="profile-header">
-        <div className="profile-pic">
-          <div className="pic-placeholder">Profile Pic</div>
-        </div>
-        <h1>{user.username}</h1>
-        <div className="profile-stats">
-          <span>Reading Lists: {user.readingList.length}</span>
-          <span>Followers: 0</span>
-        </div>
-      </div>
-
-      <div className="profile-section">
-        <h2>About</h2>
-        {isEditingAbout ? (
-          <div className="about-edit">
-            <textarea
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              rows="3"
-              className="about-textarea"
-            />
-            <button onClick={handleAboutSave} className="save-btn">Save</button>
+    <div className="profile-page">
+      <h1>{username}'s Profile</h1>
+      <h2>Your Lists</h2>
+      {lists.length === 0 ? (
+        <p>You have no lists yet. Start adding books to your library!</p>
+      ) : (
+        lists.map(list => (
+          <div key={list.name} className="list-section">
+            <h3>{list.name}</h3>
+            {list.books.length === 0 ? (
+              <p>No books in this list.</p>
+            ) : (
+              <div className="book-grid">
+                {list.books.map(book => (
+                  <div key={book.bookId} className="book-card">
+                    <img src={book.cover} alt={book.title} className="book-cover" />
+                    <h4>{book.title}</h4>
+                    <p>Author: {book.author}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <p onClick={handleAboutEdit} className="about-text">{about}</p>
-        )}
-        <p>Joined {new Date().toLocaleDateString()}</p>
-      </div>
-
-      <div className="profile-section">
-        <h2>Following</h2>
-        <div className="following-item">
-          <div className="following-pic">Pic</div>
-          <span>SampleUser</span>
-          <span>27.2K Followers</span>
-        </div>
-      </div>
-
-      <div className="profile-section">
-        <h2>{user.username}'s Reading List</h2>
-        {user.readingList.length > 0 ? (
-          user.readingList.map((book, index) => (
-            <div key={index} className="book-item">
-              <span>{book.title}</span>
-              {book.pdfPath && <a href={`http://localhost:5000/${book.pdfPath}`} target="_blank" rel="noopener noreferrer">View PDF</a>}
-            </div>
-          ))
-        ) : (
-          <p>No books in your reading list yet.</p>
-        )}
-      </div>
+        ))
+      )}
     </div>
   );
 };
