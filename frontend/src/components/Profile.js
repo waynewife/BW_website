@@ -8,6 +8,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('Guest');
+  const [description, setDescription] = useState('Tap here to add a description about yourself...');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -17,10 +19,11 @@ const Profile = () => {
         });
         setLists(response.data.lists || []);
         setUsername(response.data.username || 'Guest');
+        setDescription(response.data.description || 'Tap here to add a description about yourself...');
         setLoading(false);
       } catch (err) {
         console.error('Error fetching profile:', err);
-        setError('Failed to load profile data.');
+        setError('Failed to load profile data. Please ensure you are logged in.');
         setLoading(false);
       }
     };
@@ -46,7 +49,7 @@ const Profile = () => {
   const handleAddToLibrary = async (book) => {
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: 'Default', // Add to a default list in the library
+        listName: 'Default',
         book: {
           bookId: book.id,
           title: book.title,
@@ -84,7 +87,6 @@ const Profile = () => {
       });
       alert('Book added to your profile reading list!');
       setSelectedBook(null);
-      // Refresh the lists to show the updated reading list
       const response = await axios.get('http://localhost:5000/api/users/profile', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -95,6 +97,49 @@ const Profile = () => {
     }
   };
 
+  const handleDescriptionClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleDescriptionSave = async () => {
+    if (!description.trim()) {
+      alert('Description cannot be empty.');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/update-description', {
+        description,
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setDescription(response.data.description);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating description:', error);
+      alert('Failed to update description. Please try again.');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    // Reset description to original value by refetching profile
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/profile', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setDescription(response.data.description || 'Tap here to add a description about yourself...');
+      } catch (err) {
+        console.error('Error refetching profile:', err);
+      }
+    };
+    fetchProfile();
+  };
+
   if (loading) {
     return <div className="profile-page">Loading...</div>;
   }
@@ -103,7 +148,6 @@ const Profile = () => {
     return <div className="profile-page">{error}</div>;
   }
 
-  // For the reading list, we'll use a separate list in the backend
   const readingList = lists.find(list => list.name === 'Profile Reading List') || { books: [] };
 
   return (
@@ -115,7 +159,25 @@ const Profile = () => {
       </div>
       <div className="profile-section">
         <h2>About</h2>
-        <p>Tap here to add a description about yourself...</p>
+        {isEditing ? (
+          <div>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              className="description-textarea"
+              rows="3"
+              cols="50"
+            />
+            <div>
+              <button onClick={handleDescriptionSave} className="save-btn">Save</button>
+              <button onClick={handleCancelEdit} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <p onClick={handleDescriptionClick} className="description-text">
+            {description}
+          </p>
+        )}
         <p>Joined 4/25/2025</p>
       </div>
       <div className="profile-section">

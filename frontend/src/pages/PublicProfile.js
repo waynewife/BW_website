@@ -105,7 +105,7 @@ const PublicProfile = () => {
       </div>
       <div className="profile-section">
         <h2>About</h2>
-        <p>Tap here to add a description about yourself...</p>
+        <p>{profile.description}</p>
         <p>Joined 4/25/2025</p>
       </div>
       <div className="profile-section">

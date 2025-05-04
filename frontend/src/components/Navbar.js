@@ -25,11 +25,18 @@ const Navbar = () => {
   };
 
   const handleSearch = async () => {
-    if (!searchTerm) return;
+    if (!searchTerm) {
+      history.push('/search', { books: [], error: 'Please enter a search term.' });
+      return;
+    }
     try {
       const response = await axios.get(
-        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchTerm)}&maxResults=10`
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchTerm)}&maxResults=40`
       );
+      if (!response.data.items) {
+        history.push('/search', { books: [], error: 'No books found for this search term.' });
+        return;
+      }
       const fetchedBooks = response.data.items.map(item => ({
         id: item.id,
         title: item.volumeInfo.title,
@@ -42,7 +49,7 @@ const Navbar = () => {
       history.push('/search', { books: fetchedBooks });
     } catch (error) {
       console.error('Error fetching books:', error);
-      history.push('/search', { books: [], error: 'Failed to fetch books.' });
+      history.push('/search', { books: [], error: 'Failed to fetch books. Please check your internet connection or try again later.' });
     }
   };
 
@@ -50,8 +57,12 @@ const Navbar = () => {
     setIsOpen(false);
     try {
       const response = await axios.get(
-        `https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(genre)}&maxResults=10`
+        `https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(genre)}&maxResults=40`
       );
+      if (!response.data.items) {
+        history.push(`/genre/${genre}`, { books: [], error: 'No books found for this genre.' });
+        return;
+      }
       const fetchedBooks = response.data.items.map(item => ({
         id: item.id,
         title: item.volumeInfo.title,

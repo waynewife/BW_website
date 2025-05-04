@@ -26,6 +26,7 @@ router.get('/profile', auth, async (req, res) => {
       username: user.username,
       lists: user.lists || [],
       profileReadingList: user.profileReadingList || [],
+      description: user.description || 'Tap here to add a description about yourself...',
     });
   } catch (error) {
     console.error(error);
@@ -41,7 +42,24 @@ router.get('/public-profile/:username', async (req, res) => {
     res.json({
       username: user.username,
       profileReadingList: user.profileReadingList || [],
+      description: user.description || 'Tap here to add a description about yourself...',
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update user description
+router.post('/update-description', auth, async (req, res) => {
+  const { description } = req.body;
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.description = description || 'Tap here to add a description about yourself...';
+    await user.save();
+    res.json({ description: user.description });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

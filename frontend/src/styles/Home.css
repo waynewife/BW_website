@@ -1,42 +1,85 @@
-.home {
+.home-page {
   padding: 2rem;
-  text-align: center;
   background: linear-gradient(135deg, #4B5EAA, #A94BB5, #E94B4B);
   min-height: 100vh;
   color: white;
-  transition: background 0.3s ease;
+  text-align: center;
 }
 
-.home.dark-mode {
-  background: #000;
-  color: #fff;
-}
-
-.title {
+.home-page h1 {
   font-size: 3rem;
-  margin-bottom: 1rem;
-  animation: fadeIn 1s ease-in;
+  margin-bottom: 0.5rem;
 }
 
-.subtitle {
+.home-page p {
   font-size: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.content {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
+.featured-books {
+  margin: 2rem 0;
 }
 
-.auth-buttons, .suggestions {
+.featured-books h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.carousel {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 1rem;
 }
 
-.auth-btn {
-  padding: 0.75rem 1.5rem;
+.carousel-btn {
+  background: #FFD700;
+  color: #4B5EAA;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.carousel-btn:hover {
+  transform: scale(1.1);
+}
+
+.featured-book {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 600px;
+  gap: 1rem;
+}
+
+.featured-cover {
+  width: 128px;
+  height: 192px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.book-info {
+  text-align: left;
+}
+
+.book-info h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.book-info p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.explore-btn {
+  padding: 0.5rem 1rem;
   background: #FFD700;
   color: #4B5EAA;
   border: none;
@@ -45,29 +88,40 @@
   transition: transform 0.3s ease;
 }
 
-.auth-btn:hover {
+.explore-btn:hover {
   transform: scale(1.05);
 }
 
-.book-grid {
+.top-genres {
+  margin: 2rem 0;
+}
+
+.top-genres h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.genre-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.book-card {
+.genre-card {
+  background: rgba(0, 0, 0, 0.8);
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  animation: slideUp 0.5s ease-out;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.genre-card:hover {
+  transform: translateY(-5px);
 }
 
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.genre-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
 }

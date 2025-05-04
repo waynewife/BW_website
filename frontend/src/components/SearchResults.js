@@ -37,7 +37,7 @@ const SearchResults = () => {
   const handleAddToLibrary = async () => {
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: 'Default', // Add to a default list in the library
+        listName: 'Default',
         book: {
           bookId: selectedBook.id,
           title: selectedBook.title,

@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   lists: { type: [listSchema], default: [] },
-  profileReadingList: { type: [bookSchema], default: [] }, // Add profile reading list
+  profileReadingList: { type: [bookSchema], default: [] },
+  description: { type: String, default: 'Tap here to add a description about yourself...' }, // Add description field
 });
 
 module.exports = mongoose.model('User', userSchema);

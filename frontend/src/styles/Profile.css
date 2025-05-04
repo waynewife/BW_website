@@ -56,6 +56,48 @@
   margin: 0.5rem 0;
 }
 
+.description-text {
+  cursor: pointer;
+}
+
+.description-text:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.description-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #FFD700;
+  background: #333;
+  color: white;
+  font-size: 1rem;
+  resize: none;
+}
+
+.save-btn, .cancel-btn {
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0.5rem 0 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.save-btn {
+  background: #FFD700;
+  color: #4B5EAA;
+}
+
+.cancel-btn {
+  background: #A94BB5;
+  color: #fff;
+}
+
+.save-btn:hover, .cancel-btn:hover {
+  transform: scale(1.05);
+}
+
 .following-item {
   display: flex;
   align-items: center;
