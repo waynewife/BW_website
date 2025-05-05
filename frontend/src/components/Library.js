@@ -7,6 +7,8 @@ const Library = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedList, setSelectedList] = useState('');
+  const [newListName, setNewListName] = useState('');
+  const [createNewList, setCreateNewList] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,6 +36,9 @@ const Library = () => {
   const handleCloseModal = () => {
     setSelectedBook(null);
     setShowAddModal(false);
+    setCreateNewList(false);
+    setNewListName('');
+    setSelectedList('');
   };
 
   const handleAddToLibraryClick = () => {
@@ -41,13 +46,21 @@ const Library = () => {
   };
 
   const handleAddToLibrary = async () => {
-    if (!selectedList) {
-      alert('Please select a list to add the book to.');
+    let listName = selectedList;
+    if (createNewList) {
+      if (!newListName.trim()) {
+        alert('Please enter a name for the new list.');
+        return;
+      }
+      listName = newListName.trim();
+    } else if (!selectedList) {
+      alert('Please select a list or create a new one to add the book to.');
       return;
     }
+
     try {
       await axios.post('http://localhost:5000/api/users/add-book-to-list', {
-        listName: selectedList,
+        listName,
         book: {
           bookId: selectedBook.bookId,
           title: selectedBook.title,
@@ -56,12 +69,16 @@ const Library = () => {
           cover: selectedBook.cover,
           genre: selectedBook.genre,
           volumeInfo: selectedBook.volumeInfo,
-        }
+        },
+        createNew: createNewList,
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      alert(`Book added to ${selectedList}!`);
+      alert(`Book added to ${listName}!`);
       setShowAddModal(false);
+      setCreateNewList(false);
+      setNewListName('');
+      setSelectedList('');
       setSelectedBook(null);
       const response = await axios.get('http://localhost:5000/api/users/profile', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -90,6 +107,10 @@ const Library = () => {
       });
       alert('Book added to your profile reading list!');
       setSelectedBook(null);
+      const response = await axios.get('http://localhost:5000/api/users/profile', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setLists(response.data.lists || []);
     } catch (error) {
       console.error('Error adding book to profile list:', error);
       alert('Failed to add book to profile list.');
@@ -111,8 +132,6 @@ const Library = () => {
   if (error) {
     return <div className="library-page">{error}</div>;
   }
-
-  const profileReadingList = lists.find(list => list.name === 'Profile Reading List') || { books: [] };
 
   return (
     <div className="library-page">
@@ -136,23 +155,6 @@ const Library = () => {
         </div>
       ))}
 
-      <div className="library-section">
-        <h2>Profile Reading List</h2>
-        {profileReadingList.books.length === 0 ? (
-          <p>No books in this list yet.</p>
-        ) : (
-          <div className="book-grid">
-            {profileReadingList.books.map(book => (
-              <div key={book.bookId} className="book-card" onClick={() => handleBookClick(book)}>
-                <img src={book.cover} alt={book.title} className="book-cover" />
-                <h4>{book.title}</h4>
-                <p>Author: {book.author}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {selectedBook && (
         <div className="modal">
           <div className="modal-content">
@@ -175,16 +177,44 @@ const Library = () => {
           <div className="modal-content">
             <span className="close-btn" onClick={handleCloseModal}>×</span>
             <h2>Add to Library</h2>
-            <select
-              value={selectedList}
-              onChange={(e) => setSelectedList(e.target.value)}
-              className="list-select"
-            >
-              <option value="">Select a list</option>
-              {lists.map(list => (
-                <option key={list.name} value={list.name}>{list.name}</option>
-              ))}
-            </select>
+            <div className="list-options">
+              <label>
+                <input
+                  type="radio"
+                  checked={!createNewList}
+                  onChange={() => setCreateNewList(false)}
+                />
+                Select Existing List
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  checked={createNewList}
+                  onChange={() => setCreateNewList(true)}
+                />
+                Create New List
+              </label>
+            </div>
+            {!createNewList ? (
+              <select
+                value={selectedList}
+                onChange={(e) => setSelectedList(e.target.value)}
+                className="list-select"
+              >
+                <option value="">Select a list</option>
+                {lists.map(list => (
+                  <option key={list.name} value={list.name}>{list.name}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="Enter new list name (e.g., Romance)"
+                className="list-input"
+              />
+            )}
             <div className="modal-actions">
               <button className="confirm-btn" onClick={handleAddToLibrary}>Confirm</button>
               <button className="cancel-btn" onClick={handleCloseModal}>Cancel</button>

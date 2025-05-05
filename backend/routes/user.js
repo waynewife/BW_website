@@ -68,16 +68,29 @@ router.post('/update-description', auth, async (req, res) => {
 
 // Add book to a library list (private)
 router.post('/add-book-to-list', auth, async (req, res) => {
-  const { listName, book } = req.body;
+  const { listName, book, createNew } = req.body;
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const list = user.lists.find(l => l.name === listName);
-    if (list) {
-      list.books.push(book);
+    // Prevent creating a new list with the name "Profile Reading List"
+    if (createNew && listName === 'Profile Reading List') {
+      return res.status(400).json({ message: 'Cannot create a list named "Profile Reading List".' });
+    }
+
+    let list = user.lists.find(l => l.name === listName);
+    if (createNew) {
+      if (list) {
+        return res.status(400).json({ message: 'List with this name already exists.' });
+      }
+      list = { name: listName, books: [book] };
+      user.lists.push(list);
     } else {
-      user.lists.push({ name: listName, books: [book] });
+      if (list) {
+        list.books.push(book);
+      } else {
+        user.lists.push({ name: listName, books: [book] });
+      }
     }
     await user.save();
     res.json(user.lists);
